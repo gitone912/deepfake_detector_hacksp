@@ -3,7 +3,7 @@ import shutil
 import cv2
 import numpy as np
 import tensorflow as tf
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 from .forms import VideoUploadForm
@@ -14,6 +14,7 @@ import json
 import base64
 from io import BytesIO
 from PIL import Image
+from django.contrib import messages
 
 # Load the model once when the server starts
 model = tf.keras.models.load_model('models/deepfake_detection_model.h5')
@@ -171,3 +172,46 @@ def detect_images_api(request):
         return JsonResponse({'error': 'Invalid JSON data'}, status=400)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+def register_view(request):
+    if request.method == 'POST':
+        # Dummy registration - always succeeds
+        messages.success(request, 'Registration successful!')
+        return redirect('subscription')
+    return render(request, 'register.html')
+
+def login_view(request):
+    # Simple dummy login view
+    if request.method == 'POST':
+        # Add your authentication logic here
+        return redirect('revenue_dashboard')
+    return render(request, 'app/login.html')
+
+def revenue_dashboard(request):
+    # Dummy revenue dashboard view
+    context = {
+        'total_revenue': 1000,  # dummy data
+        'transactions': []  # dummy data
+    }
+    return render(request, 'app/revenue_dashboard.html')
+
+def subscription_view(request):
+    # Dummy subscription plans
+    subscriptions = [
+        {
+            'name': 'Basic',
+            'price': '$9.99/month',
+            'features': ['10 detections/month', 'Basic support', 'Standard accuracy']
+        },
+        {
+            'name': 'Pro',
+            'price': '$24.99/month',
+            'features': ['50 detections/month', 'Priority support', 'High accuracy', 'API access']
+        },
+        {
+            'name': 'Enterprise',
+            'price': '$99.99/month',
+            'features': ['Unlimited detections', '24/7 support', 'Highest accuracy', 'API access', 'Custom integration']
+        }
+    ]
+    return render(request, 'subscription.html', {'subscriptions': subscriptions})
